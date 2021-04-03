@@ -4,7 +4,6 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import AllowAny
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.filters import SearchFilter
 
 from articles.models import Article
@@ -16,7 +15,6 @@ class ArticleList(ListAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
 
-    pagination_class = PageNumberPagination
     filter_backends = [SearchFilter]
     search_fields = ['title', 'body', 'author__username']
 

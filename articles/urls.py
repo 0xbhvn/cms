@@ -7,4 +7,5 @@ app_name = 'article'
 urlpatterns = [
     path('', ArticleList.as_view()),
     path('create/', ArticleCreate.as_view()),
+    path('<slug>/', ArticleDetail.as_view()),
 ]

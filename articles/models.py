@@ -1,13 +1,12 @@
 import random
 
-
 from django.db import models
 from django.conf import settings
 from django.utils.text import slugify
 
 
 def upload_location(self, instance, **kwargs):
-    return 'articles/media/{}.jpg'.format(self.slug)
+    return 'media/articles/{}.jpg'.format(self.slug)
 
 
 class Article(models.Model):
@@ -27,7 +26,7 @@ class Article(models.Model):
     slug = models.SlugField(max_length=255, blank=True, unique=True)
 
     class Meta:
-        ordering = ['created_at']
+        ordering = ['-created_at']
 
     def __str__(self):
         return self.title
