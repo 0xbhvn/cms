@@ -3,6 +3,7 @@ from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import permission_classes
+from django.contrib.auth.mixins import UserPassesTestMixin
 
 from accounts.models import Account
 from accounts.serializers import RegistrationSerializer, AccountSerializer
