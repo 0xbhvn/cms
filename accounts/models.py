@@ -27,7 +27,6 @@ class AccountManager(BaseUserManager):
             username=username,
             password=password)
 
-        user.is_admin = True
         user.is_staff = True
         user.is_superuser = True
 
@@ -44,7 +43,6 @@ class Account(AbstractBaseUser):
     last_login = models.DateTimeField(auto_now=True)
 
     is_active = models.BooleanField(default=True)
-    is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
 
@@ -57,7 +55,7 @@ class Account(AbstractBaseUser):
         return self.email
 
     def has_perm(self, perm, obj=None):
-        return self.is_admin
+        return self.is_superuser
 
     def has_module_perms(self, app_lable):
         return True

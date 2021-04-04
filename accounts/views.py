@@ -1,5 +1,5 @@
 from rest_framework import status
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import permission_classes
@@ -8,6 +8,7 @@ from accounts.models import Account
 from accounts.serializers import RegistrationSerializer, AccountSerializer
 
 
+@permission_classes([IsAdminUser, ])
 class AccountList(APIView):
     def get(self, request, format=None):
         accounts = Account.objects.all()
@@ -34,20 +35,20 @@ class AccountRegister(APIView):
 
 
 class AccountDetail(APIView):
-    def get_object(self, pk):
+    def get_object(self, username):
         try:
-            return Account.objects.get(pk=pk)
+            return Account.objects.get(username=username)
         except Account.DoesNotExist:
             raise Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
 
-    def get(self, request, pk, format=None):
-        account = self.get_object(pk)
+    def get(self, request, username, format=None):
+        account = self.get_object(username)
         serializer = AccountSerializer(account)
 
         return Response(serializer.data)
 
-    def put(self, request, pk, format=None):
-        account = self.get_object(pk)
+    def put(self, request, username, format=None):
+        account = self.get_object(username)
         serializer = AccountSerializer(account, data=request.data)
 
         if serializer.is_valid():
@@ -57,8 +58,8 @@ class AccountDetail(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk, format=None):
-        account = self.get_object(pk)
+    def delete(self, request, username, format=None):
+        account = self.get_object(username)
         account.delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)

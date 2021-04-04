@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.decorators import permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.filters import SearchFilter
 
 from articles.models import Article
@@ -19,6 +19,7 @@ class ArticleList(ListAPIView):
     search_fields = ['title', 'body', 'author__username']
 
 
+@permission_classes([IsAdminUser, ])
 class ArticleCreate(APIView):
     def post(self, request, format=None):
         author = Article(author=request.user)
@@ -32,6 +33,7 @@ class ArticleCreate(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@permission_classes([IsAuthenticated, ])
 class ArticleDetail(APIView):
     def get_object(self, slug):
         try:
@@ -44,6 +46,15 @@ class ArticleDetail(APIView):
         serializer = ArticleSerializer(article)
 
         return Response(serializer.data)
+
+
+@permission_classes([IsAdminUser, ])
+class ArticleUpdateDelete(APIView):
+    def get_object(self, slug):
+        try:
+            return Article.objects.get(slug=slug)
+        except Article.DoesNotExist:
+            raise Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, slug, format=None):
         article = self.get_object(slug)

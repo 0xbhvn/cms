@@ -6,7 +6,7 @@ from django.utils.text import slugify
 
 
 def upload_location(self, instance, **kwargs):
-    return 'media/articles/{}.jpg'.format(self.slug)
+    return 'articles/{}.jpg'.format(self.slug)
 
 
 class Article(models.Model):
