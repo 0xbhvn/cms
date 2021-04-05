@@ -1,5 +1,5 @@
 from rest_framework import status
-from rest_framework.permissions import AllowAny, IsAdminUser
+from rest_framework.permissions import AllowAny, IsAdminUser, BasePermission, SAFE_METHODS
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import permission_classes
@@ -9,11 +9,18 @@ from accounts.models import Account
 from accounts.serializers import RegistrationSerializer, AccountSerializer
 
 
-@permission_classes([IsAdminUser, ])
+class IsSuperuser(BasePermission):
+    message = 'User operations are restricted to superusers only.'
+
+    def has_permission(self, request, view):
+        return request.user.is_superuser
+
+
+@permission_classes([IsSuperuser, ])
 class AccountList(APIView):
     def get(self, request, format=None):
         accounts = Account.objects.all()
-        serializer = RegistrationSerializer(accounts, many=True)
+        serializer = AccountSerializer(accounts, many=True)
 
         return Response(serializer.data)
 
@@ -35,6 +42,7 @@ class AccountRegister(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@permission_classes([IsSuperuser, ])
 class AccountDetail(APIView):
     def get_object(self, username):
         try:
@@ -64,3 +72,14 @@ class AccountDetail(APIView):
         account.delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@permission_classes([AllowAny, ])
+class BlacklistToken(APIView):
+    def post(self, request):
+        try:
+            refresh_token = request.data['refresh_token']
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
