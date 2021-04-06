@@ -9,6 +9,13 @@ from accounts.models import Account
 from accounts.serializers import RegistrationSerializer, AccountSerializer
 
 
+class CurrentUser(APIView):
+    def get(self, request, format=None):
+        serializer = AccountSerializer(request.user)
+
+        return Response(serializer.data)
+
+
 class IsSuperuser(BasePermission):
     message = 'User operations are restricted to superusers only.'
 
