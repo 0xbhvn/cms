@@ -5,6 +5,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.filters import SearchFilter
+from rest_framework.parsers import MultiPartParser, FormParser
 
 from articles.models import Article
 from articles.serializers import ArticleSerializer
@@ -15,12 +16,20 @@ class ArticleList(ListAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
 
+
+@permission_classes([AllowAny, ])
+class ArticleListSearch(ListAPIView):
+    queryset = Article.objects.all()
+    serializer_class = ArticleSerializer
+
     filter_backends = [SearchFilter]
-    search_fields = ['title', 'body', 'author__username']
+    search_fields = ['title', 'body', 'author__username', 'category']
 
 
 @permission_classes([IsAdminUser, ])
 class ArticleCreate(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+
     def post(self, request, format=None):
         author = Article(author=request.user)
         serializer = ArticleSerializer(author, data=request.data)
