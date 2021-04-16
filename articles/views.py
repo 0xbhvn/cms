@@ -11,13 +11,13 @@ from articles.models import Article
 from articles.serializers import ArticleSerializer
 
 
-@permission_classes([AllowAny, ])
+@permission_classes([IsAuthenticated, ])
 class ArticleList(ListAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
 
 
-@permission_classes([AllowAny, ])
+@permission_classes([IsAuthenticated, ])
 class ArticleListSearch(ListAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
@@ -64,6 +64,8 @@ class ArticleUpdateDelete(APIView):
             return Article.objects.get(slug=slug)
         except Article.DoesNotExist:
             raise Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
+
+    parser_classes = [MultiPartParser, FormParser]
 
     def put(self, request, slug, format=None):
         article = self.get_object(slug)
