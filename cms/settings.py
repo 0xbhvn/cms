@@ -133,6 +133,8 @@ AWS_ACCESS_KEY_ID = 'AKIARNWGMFQKOKEK6QG6'
 AWS_SECRET_ACCESS_KEY = '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'
 AWS_STORAGE_BUCKET_NAME = 'bhavenscms-bucket'
 
+AWS_DEFAULT_ACL = None
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
